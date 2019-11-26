@@ -9,3 +9,5 @@ pip install requests
 
 Import the 
 template-maxscale.xml
+
+Assign the template to the host where maxscale is installed.
