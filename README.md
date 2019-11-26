@@ -1,7 +1,11 @@
 # zbx_maxscale
 Zabbix-Checks for MaxScale
 
+Prerequisites:
+maxscale must be running and the rest api must be reachable from zabbix-server. This can be achieved setting the admin_host configuration in the maxscale section.
+
 Installation:
+
 Copy maxscale_discovery.py and maxscale_status.py to the zabbix-server external-scripts directory.
 Install click and requests using pip:
 
