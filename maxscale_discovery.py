@@ -34,8 +34,10 @@ def main(ctx, host, user, password, port):
 def servers(server):
   response = send_request("servers",server)
   result = []
-  for server in response['data']:
-    result.append(server['id'])
+  for servers in response['data']:
+    result.append({
+      "id": servers['id']
+      })
   print(json.dumps(result))
   pass
 

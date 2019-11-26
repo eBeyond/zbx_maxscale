@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>4.4</version>
+    <date>2019-11-26T06:39:12Z</date>
+    <groups>
+        <group>
+            <name>Templates</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Template MaxScale Script Discovery</template>
+            <name>Template MaxScale Script Discovery</name>
+            <description>Template to monitor the MaxScale load balancer.</description>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>MaxScale Connections</name>
+                </application>
+                <application>
+                    <name>MaxScale Listeners</name>
+                </application>
+                <application>
+                    <name>MaxScale Monitors</name>
+                </application>
+                <application>
+                    <name>MaxScale Servers</name>
+                </application>
+                <application>
+                    <name>MaxScale Service</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>MaxScale Total Connections</name>
+                    <type>EXTERNAL</type>
+                    <key>maxscale_status.py[{HOST.CONN},srvconns,&quot;total_connections&quot;]</key>
+                    <delay>60</delay>
+                    <applications>
+                        <application>
+                            <name>MaxScale Connections</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>MaxScale service is running</name>
+                    <key>net.tcp.listen[6603]</key>
+                    <delay>30</delay>
+                    <applications>
+                        <application>
+                            <name>MaxScale Service</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}=0</expression>
+                            <name>MaxScale service is down on {HOST.NAME}</name>
+                            <priority>HIGH</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+            </items>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Discovery MaxScale Listeners</name>
+                    <type>EXTERNAL</type>
+                    <key>maxscale_discovery.py[{HOST.CONN},listeners]</key>
+                    <delay>3620</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>{#MS_LISTENER_ID} Status</name>
+                            <type>EXTERNAL</type>
+                            <key>maxscale_status.py[{HOST.CONN},listeners,&quot;{#MS_LISTENER_ID}&quot;]</key>
+                            <delay>30</delay>
+                            <trends>0</trends>
+                            <value_type>CHAR</value_type>
+                            <applications>
+                                <application>
+                                    <name>MaxScale Listeners</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{str(Running)}=0</expression>
+                                    <name>MaxScale {#MS_LISTENER_ID} Listener is down</name>
+                                    <priority>HIGH</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#MS_LISTENER_ID} Port ({#MS_LISTENER_PORT})</name>
+                            <key>net.tcp.port[{HOST.CONN},{#MS_LISTENER_PORT}]</key>
+                            <applications>
+                                <application>
+                                    <name>MaxScale Listeners</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{max(5m)}=0</expression>
+                                    <name>MaxScale Listener {#MS_LISTENER_ID} Port {#MS_LISTENER_PORT} is unreachable</name>
+                                    <priority>HIGH</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                    <lld_macro_paths>
+                        <lld_macro_path>
+                            <lld_macro>{#MS_LISTENER_ID}</lld_macro>
+                            <path>$.id</path>
+                        </lld_macro_path>
+                        <lld_macro_path>
+                            <lld_macro>{#MS_LISTENER_PORT}</lld_macro>
+                            <path>$.port</path>
+                        </lld_macro_path>
+                    </lld_macro_paths>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Discovery MaxScale Monitors</name>
+                    <type>EXTERNAL</type>
+                    <key>maxscale_discovery.py[{HOST.CONN},monitors]</key>
+                    <delay>3610</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>{#MS_MONITOR_ID} Status</name>
+                            <type>EXTERNAL</type>
+                            <key>maxscale_status.py[{HOST.CONN},monitors,&quot;{#MS_MONITOR_ID}&quot;]</key>
+                            <delay>30</delay>
+                            <trends>0</trends>
+                            <value_type>CHAR</value_type>
+                            <applications>
+                                <application>
+                                    <name>MaxScale Monitors</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{str(Running)}=0</expression>
+                                    <name>MaxScale {#MS_MONITOR_ID} Monitor is down</name>
+                                    <priority>HIGH</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                    <lld_macro_paths>
+                        <lld_macro_path>
+                            <lld_macro>{#MS_MONITOR_ID}</lld_macro>
+                            <path>$.id</path>
+                        </lld_macro_path>
+                    </lld_macro_paths>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Discovery MaxScale Servers</name>
+                    <type>EXTERNAL</type>
+                    <key>maxscale_discovery.py[{HOST.CONN},servers]</key>
+                    <delay>3600</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>{#MS_SERVER_ID} Status</name>
+                            <type>EXTERNAL</type>
+                            <key>maxscale_status.py[{HOST.CONN},servers,&quot;{#MS_SERVER_ID}&quot;]</key>
+                            <delay>30</delay>
+                            <trends>0</trends>
+                            <value_type>CHAR</value_type>
+                            <applications>
+                                <application>
+                                    <name>MaxScale Servers</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{diff()}=1</expression>
+                                    <name>MaxScale Host Status changed</name>
+                                    <priority>INFO</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Number of Connections to {#MS_SERVER_ID}</name>
+                            <type>EXTERNAL</type>
+                            <key>maxscale_status.py[{HOST.CONN},srvconns,&quot;{#MS_SERVER_ID}&quot;]</key>
+                            <delay>60</delay>
+                            <applications>
+                                <application>
+                                    <name>MaxScale Connections</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                    </item_prototypes>
+                    <lld_macro_paths>
+                        <lld_macro_path>
+                            <lld_macro>{#MS_SERVER_ID}</lld_macro>
+                            <path>$.id</path>
+                        </lld_macro_path>
+                    </lld_macro_paths>
+                </discovery_rule>
+            </discovery_rules>
+        </template>
+    </templates>
+    <graphs>
+        <graph>
+            <name>MaxScale Total Connections</name>
+            <graph_items>
+                <graph_item>
+                    <color>00EE00</color>
+                    <item>
+                        <host>Template MaxScale Script Discovery</host>
+                        <key>maxscale_status.py[{HOST.CONN},srvconns,&quot;total_connections&quot;]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+    </graphs>
+</zabbix_export>
